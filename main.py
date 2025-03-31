@@ -1,10 +1,12 @@
 import datetime
 
 from expenses import Expense
-from menus import CategoryMenu, ScheduleMenu
-from schedules import schedule_menu_selections
+from menus import CategoryMenu
 from period import Period
 from builder import BuilderMenu
+
+
+
 class Outgoings:
     def __init__(self):
         self.outs = []
@@ -78,16 +80,21 @@ def create_expense():
     
     # go through the appropriate menus for the schedule
     # exp_schedule = exp_schedule_class(menu = None)
-    p = Period(start=datetime.datetime.now().date(), interval='M', number=6)
     e = Expense(name=exp_name, amount=float(exp_amount), category=exp_cat, schedule=sched)
-    import ipdb;ipdb.set_trace()
-    print(e.schedule.get_occurences_in_period(p))
-
-    import ipdb; ipdb.set_trace()
-
-create_expense()
+    return e
 
 
+outgoings = Outgoings()
+def add_expenses():
+    while True:
+    
+        ne = create_expense()
+        outgoings.add_outgoing(ne)
+
+try:
+    add_expenses()
+except KeyboardInterrupt:
+    print('done adding expenses')
 
 
     

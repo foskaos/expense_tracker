@@ -1,5 +1,6 @@
 from categories import ExpenseCategory
 
+
 class SelectionMenu:
     def __init__(self, selections: dict[str, str], title: str):
         self.selections = selections
@@ -31,18 +32,17 @@ class CategoryMenu(SelectionMenu):
         "n": ExpenseCategory.ENTERTAINMENT,
         "u": ExpenseCategory.UTILITIES,
     }
+
     def __init__(self):
-        super().__init__(self.category_selection, 'Expense Category Selection')
+        super().__init__(self.category_selection, "Expense Category Selection")
 
 
 class AnchoredExpenseMenu(SelectionMenu):
+    sel_menu = {"1...28": "Enter a numbered day between 1 and 28"}
+    valid_range = [str(i) for i in range(1, 29)]
 
-    sel_menu = {
-            "1...28":"Enter a numbered day between 1 and 28"
-    }
-    valid_range = [str(i) for i in range(1,29)]
     def __init__(self):
-        super().__init__(self.sel_menu, 'Recurring Expense Date')
+        super().__init__(self.sel_menu, "Recurring Expense Date")
 
     def show_menu(self):
         title_padding = len(self.title) + 14
@@ -56,16 +56,32 @@ class AnchoredExpenseMenu(SelectionMenu):
         while True:
             selection = input("Select from the menu:")
             if selection in self.valid_range:
-                return {'anchor':int(selection)}
-            print('Invalid Selection')
+                return {"anchor": int(selection)}
+            print("Invalid Selection")
 
-class ScheduleMenu(SelectionMenu):
-    def __init__(self, selections):
-        super().__init__(selections, 'Expense Schedule Selection')
 
-    def run_wip(self):
-        # fixme: this should be more dynamic, eg. any number of nested menus should work.
-        selected = super().run()
-        sub = selected()
-        sub_sel = sub.run()
-        return sub_sel
+class FLDayExpenseMenu(SelectionMenu):
+    sel_menu = {"f": "First Working Day", "l": "Last Working Day"}
+
+    def __init__(self):
+        super().__init__(self.sel_menu, "First or Last Working Day of the Month")
+
+    def get_selection(self):
+        while True:
+            selection = input("Select from the menu")
+            if selection in ["f", "l"]:
+                # TODO: this is arbitrary the dict. Should probably make an interface for this
+                return {"anchor": selection}
+            print("Invalid Selection.")
+
+
+# class ScheduleMenu(SelectionMenu):
+#    def __init__(self, selections):
+#        super().__init__(selections, 'Expense Schedule Selection')
+#
+#    def run_wip(self):
+#        # fixme: this should be more dynamic, eg. any number of nested menus should work.
+#        selected = super().run()
+#        sub = selected()
+#        sub_sel = sub.run()
+#        return sub_sel

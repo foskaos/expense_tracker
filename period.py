@@ -35,31 +35,47 @@ def increment_date_by_months(date: datetime.date, increment: int) -> datetime.da
     return new_date
 
 
-def is_weekday(date: datetime.date)->bool:
-
-    if date.weekday() in [5,6]:
+def is_weekday(date: datetime.date) -> bool:
+    if date.weekday() in [5, 6]:
         return False
     return True
 
 
-def last_working_day(date: datetime.date)->datetime.date:
+def last_working_day(date: datetime.date) -> datetime.date:
     """finds the last working day of the month for the month of the given date"""
-    day_to_check = increment_date_by_months(date, 1).replace(day = 1) - datetime.timedelta(days=1)
+    day_to_check = increment_date_by_months(date, 1).replace(
+        day=1
+    ) - datetime.timedelta(days=1)
 
     while True:
         if is_weekday(day_to_check):
-            break 
+            break
         day_to_check = day_to_check - datetime.timedelta(days=1)
 
-    return day_to_check        
+    return day_to_check
 
-def increment_date_by_weeks(date: datetime.date, weeks: int)->datetime.date:
-    return date + datetime.timedelta(days=7*weeks)
 
+def first_working_day(date: datetime.date) -> datetime.date:
+    day_to_check = date.replace(day=1)
+
+    while True:
+        if is_weekday(day_to_check):
+            break
+        day_to_check = day_to_check + datetime.timedelta(days=1)
+
+
+def increment_date_by_weeks(date: datetime.date, weeks: int) -> datetime.date:
+    return date + datetime.timedelta(days=7 * weeks)
 
 
 class Period:
-    def __init__(self, start: datetime.date, end: datetime.date = None, interval: str = None, number: int = None):
+    def __init__(
+        self,
+        start: datetime.date,
+        end: datetime.date = None,
+        interval: str = None,
+        number: int = None,
+    ):
         self.start = start
         if end:
             self.end = end
@@ -68,26 +84,26 @@ class Period:
             self.number = number
             self.end = self._get_period_end()
         else:
-            raise Exception('Either end date OR interval AND number to be provided')
+            raise Exception("Either end date OR interval AND number to be provided")
 
     def _get_period_end(self):
         match self.interval:
-            case 'M':
+            case "M":
                 end = increment_date_by_months(self.start, self.number)
-            case 'W':
+            case "W":
                 end = increment_date_by_weeks(self.start, self.number)
             case _:
-                raise NotImplementedError('Interval not recognized.')
+                raise NotImplementedError("Interval not recognized.")
         return end
 
     def make_period_list(self):
         match self.interval:
-            case 'M':
+            case "M":
                 incrementor = increment_date_by_months
-            case 'W':
+            case "W":
                 incrementor = increment_date_by_weeks
             case _:
-                raise NotImplementedError('No valid incrementor defined')
+                raise NotImplementedError("No valid incrementor defined")
 
         plist = []
         start = self.start
@@ -95,20 +111,20 @@ class Period:
         while True:
             end = incrementor(start, 1)
             if end <= self.end:
-                plist.append((start,end-datetime.timedelta(days=1)))
+                plist.append((start, end - datetime.timedelta(days=1)))
                 start = end
                 end = None
             else:
                 if start >= self.end:
                     break
-                plist.append((start,self.end-datetime.timedelat(days=1)))
+                plist.append((start, self.end - datetime.timedelat(days=1)))
                 break
 
         return plist
 
     def days_in_period(self):
         return (self.end - self.start).days
-    
+
     def months_in_period(self):
         """returns the unique months in a period"""
         mip = []
@@ -118,10 +134,9 @@ class Period:
             if month in mip:
                 continue
             mip.append(month)
-            nm = increment_date_by_months(month,1)
+            nm = increment_date_by_months(month, 1)
 
             if nm > self.end:
-
                 break
             month = nm
 

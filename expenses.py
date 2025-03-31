@@ -3,8 +3,13 @@ from categories import ExpenseCategory
 
 
 class Expense:
-
-    def __init__(self, amount: float, name: str, schedule: ExpenseSchedule, category: ExpenseCategory):
+    def __init__(
+        self,
+        amount: float,
+        name: str,
+        schedule: ExpenseSchedule,
+        category: ExpenseCategory,
+    ):
         self.amount = amount
         self.name = name
         self.schedule = schedule
@@ -15,6 +20,7 @@ class Expense:
 
     def __radd__(self, other):
         return self.amount + other
+
 
 # class AnchoredExpense(Expense):
 #

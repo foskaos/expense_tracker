@@ -1,6 +1,6 @@
-from menus import ScheduleMenu, AnchoredExpenseMenu, SelectionMenu
+from menus import AnchoredExpenseMenu, SelectionMenu, FLDayExpenseMenu
 
-from schedules import AnchoredExpenseSchedule, schedule_menu_selections
+from schedules import AnchoredExpenseSchedule, FirstLastWorkingDayMonthlyExpenseSchedule
 
 class AnchoredScheduleBuilder:
 
@@ -8,14 +8,24 @@ class AnchoredScheduleBuilder:
     # 2. Run Schedule Specific Menu(s)
     def __init__(self):
         self.sched_class = AnchoredExpenseSchedule
-        self.menu = AnchoredExpenseMenu
+        self.menu = AnchoredExpenseMenu()
 
     def run(self):
-        config = self.menu().run()
+        config = self.menu.run()
         return self.sched_class(config['anchor'])
 
+class FLScheduleBuilder:
 
-menu_selections = {'a':AnchoredScheduleBuilder}
+    def __init__(self):
+        self.sched_class = FirstLastWorkingDayMonthlyExpenseSchedule
+        self.menu = FLDayExpenseMenu()
+
+    def run(self):
+        config = self.menu.run()
+        return self.sched_class(config['anchor'])
+
+menu_selections = {'a':AnchoredScheduleBuilder,
+                   'f':FLScheduleBuilder}
 
 
 class BuilderMenu(SelectionMenu):
