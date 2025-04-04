@@ -18,11 +18,10 @@ class SelectionMenu(Menu):
         out = input(f'{self.name}>>   ')
         return out
 
-class TextMenu:
+class TextMenu(Menu):
     def __init__(self, title, name):
         self.title = title
         self.name = name
-
 
     def run(self):
         print(f'{self.title}')
@@ -33,7 +32,6 @@ class Schedule:
 
     def hits(self):
         pass
-
 
 class ASchedule(Schedule):
     menu_config = [
@@ -78,8 +76,6 @@ class FSchedule(Schedule):
         return f'First Last Day on {self.fl} starting at {self.sd}'
 
 
-
-
 def schedule_selection(inpt):
     sched_map = {'a': ASchedule,
              'f': FSchedule,
@@ -97,16 +93,18 @@ class Expense:
 
 class SFlow:
 
-    def __init__(self, stages, target):
+    def __init__(self, stages, target, context, parent):
         self.stages = stages
         self.target = target
+        self.context = context
+        self.parent = parent
 
     def run(self):
         progress = {}
         for stage_entry in self.stages:
             name, stage, dispatcher = stage_entry
             user_input = stage.run()
-            # problem with dispatch
+            # problem with dispatch not sure this is a good idea.
             trans = dispatcher(user_input)
             if hasattr(trans, 'menu_config'):
                 sub_menu_gathering = {}
@@ -127,12 +125,78 @@ class SFlow:
             else:
                 progress[name] = trans
 
-        print(progress)
+        print(progress,self.target)
+        #if self.target is None:
+        #    return self
+        if self.parent:
+            return self.parent.run()
+        print(self.target, 'called', self.target)
+        if self.target is None:
+            # this is weird, not sure when this would happen
+            return
         return self.target(**progress)
 
-
+context = None
 sm = SelectionMenu('Schedule choice Menu', 'schedule_type')
 am = TextMenu('Amount Input Menu', 'amount')
 
+mm = SelectionMenu('Main Menu','main_menu')
+
+def main_menu(input_choice):
+    sel = {'1':f,
+           '2':'exit'}
+    print('running',f)
+    sel[input_choice].run()
+    return sel[input_choice]
+
+mf = SFlow([('main',mm, main_menu)],None, context, None)
+
+
 f = SFlow([('amount',am,float),
-           ('schedule',sm,schedule_selection)], Expense)
+           ('schedule',sm,schedule_selection)], Expense, context,mf)
+
+
+
+#f.run()
+mflow = mf.run()
+
+import ipdb; ipdb.set_trace()
+#import ipdb; ipdb.set_trace()
+# MAIN LOOP:
+
+global_expenses = []
+
+class ExpenseSet:
+
+    def __init__(self, expenses):
+        self.expenses = expenses
+
+    def append_expense(self,expense):
+        self.expenses.append(expense)
+
+    def list_expenses(self):
+        print(self.expensed)
+
+expense_flow = SFlow([
+        ('amount',am,float),
+        ('schedule',sm,schedule_selection)
+    ], Expense, context)
+
+main_app = {'expenses':[],
+            'app_name':'expense manager',
+            }
+
+main_menu_options = {'1':'create expense',
+                     '2':'create report',
+                     '3':'edit expenses',
+                     '4':'save',
+                     '5':'load'}
+
+
+
+
+"""
+once any main menu flow ends, return to main menu
+
+so flows probably need a parent
+"""
