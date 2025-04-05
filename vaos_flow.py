@@ -158,7 +158,7 @@ f = SFlow([('amount',am,float),
 
 
 #f.run()
-#mflow = mf.run()
+mflow = mf.run()
 
 import ipdb; ipdb.set_trace()
 #import ipdb; ipdb.set_trace()
