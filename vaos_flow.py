@@ -158,7 +158,7 @@ f = SFlow([('amount',am,float),
 
 
 #f.run()
-mflow = mf.run()
+#mflow = mf.run()
 
 import ipdb; ipdb.set_trace()
 #import ipdb; ipdb.set_trace()
@@ -177,11 +177,11 @@ class ExpenseSet:
     def list_expenses(self):
         print(self.expensed)
 
-expense_flow = SFlow([
-        ('amount',am,float),
-        ('schedule',sm,schedule_selection)
-    ], Expense, context)
-
+#expense_flow = SFlow([
+#        ('amount',am,float),
+#        ('schedule',sm,schedule_selection)
+#    ], Expense, context)
+#
 main_app = {'expenses':[],
             'app_name':'expense manager',
             }
@@ -200,3 +200,48 @@ once any main menu flow ends, return to main menu
 
 so flows probably need a parent
 """
+class SSchedule:
+    def __init__(self,typ,anch):
+        self.s_type = typ
+        self.anchor = anch
+
+    def __repr__(self):
+        return f"{self.s_type} - {self.anchor}"
+class Foo:
+
+    def __init__(self, ui = False, **kwargs):
+        if ui:
+            self.name = self.name_menu()
+            self.amount = self.amount_menu()
+            self.schedule = self.schedule_menu()
+        else:
+            self.name = kwargs.get('name')
+            self.amount = kwargs.get('amount')
+            self.schedule = kwargs.get('schedule')
+            
+    def name_menu(self):
+        print("enter a name")
+        name = input('>>')
+        return name
+    
+    def amount_menu(self):
+        print('enter an amount')
+        amount = input('>>')
+        return amount
+    
+    def schedule_menu(self):
+        print('choose schedule')
+        stype = input('>>')
+        if stype == 'a':
+            print('anchor date?')
+            anchor = input('>>')
+        return SSchedule(stype, anchor)
+
+
+bar = Foo(ui=True)
+
+foobar = Foo(name='ha', amount='100', schedule=('s','s'))
+
+import ipdb; ipdb.set_trace()
+
+
