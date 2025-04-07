@@ -2,6 +2,8 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from typing import Any
 
+# TODO: fields should take a general interface rather than just hardcoded terminal
+
 class Field(ABC):
     def __init__(self, name: str, label: str | None = None):
         self.name = name
@@ -24,7 +26,6 @@ class PromptField(Field):
                 break
             except Exception:
                 print("Invalid input.")
-
 
 class NestedFormField(Field):
     def __init__(self, name: str, form: type, label: str | None = None):
@@ -58,7 +59,6 @@ class ChoiceField(Field):
         else:
             print("Invalid choice.")
         print(f"CF Context: {context}")
-
 
 class Form:
     #fields: list[Field] = []

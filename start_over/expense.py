@@ -26,7 +26,7 @@ class Expense:
 
 class ExpenseForm(Form):
     fields = [
-        PromptField("name", 'Name',  input_handler: Callable[[str], str]),
+        PromptField("name", 'Name'),
         PromptField("amount", 'Amount'),
     ]
     @classmethod
@@ -38,4 +38,6 @@ class ExpenseForm(Form):
 
 
 class SchedukeOptions:
+
+
 
