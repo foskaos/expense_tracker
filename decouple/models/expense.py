@@ -1,4 +1,4 @@
-from schedule import Schedule
+from models.schedule import Schedule
 class Expense:
 
     def __init__(self, name:str, amount:float, schedule:Schedule):

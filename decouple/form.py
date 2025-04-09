@@ -43,6 +43,8 @@ class ChoiceField(Field):
         super().__init__(name, label)
         self.choices = choices
 
+
+    # the context might need to be dict[str, callable]?
     def get_input(self, context: dict[str, Any]) -> None:
         # TODO: I don't like the numbered choices
         print(f"\n=== {self.label} ===")

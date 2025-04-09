@@ -1,7 +1,7 @@
 from form import Form, PromptField, NestedFormField, ChoiceField
 from models.expense import Expense
-from models.schedule import Schedule, ASched, BSched
-from typing import Any
+from models.schedule import ASched, BSched
+
 SCHEDULE_FORM_REGISTRY = {}
 
 def register_schedule_form(key):
@@ -11,8 +11,6 @@ def register_schedule_form(key):
         return cls
     return decorator
 
-# ------------------------------------------------------------------------------
-# Define Forms Corresponding to the Models
 
 class ExpenseForm(Form):
     def __init__(self):
@@ -26,7 +24,7 @@ class ExpenseForm(Form):
     def make_schedule_form(self):
         choice_field = ChoiceField("schedule_choice", "Select schedule type", SCHEDULE_FORM_REGISTRY)
         context = {}
-        choice_field.get_input(context)  # Returns the chosen form class.
+        choice_field.get_input(context)
         form_class = context['schedule_choice']
         
         return form_class().get_schedule()
