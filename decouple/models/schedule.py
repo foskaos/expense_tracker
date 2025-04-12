@@ -2,14 +2,13 @@ from typing import Protocol
 import datetime
 from models.period import Period, last_working_day, first_working_day
 
-class Schedule(Protocol):
 
+class Schedule(Protocol):
     def get_occurences_in_period(self, period: Period) -> list[datetime.date]:
         raise NotImplementedError("Not Implemented")
 
 
 class AnchoredExpenseSchedule(Schedule):
-
     def __init__(self, anchor: int) -> None:
         self.anchor = anchor
 
@@ -23,6 +22,7 @@ class AnchoredExpenseSchedule(Schedule):
 
         print(f"Event occures {len(occurences)} times")
         return occurences
+
 
 class FirstLastWorkingDayMonthlyExpenseSchedule(Schedule):
     def __init__(self, anchor):
@@ -61,20 +61,20 @@ class WeeklyExpenseSchedule(Schedule):
                 occurences.append(dtc)
         return occurences
 
+
 class ASched(Schedule):
-    
-    def __init__(self,anchor:int, title:str):
+    def __init__(self, anchor: int, title: str):
         self.anchor = anchor
         self.title = title
-        
+
     def __repr__(self):
         return f"ASchedule {self.title} on anchor {self.anchor}"
 
+
 class BSched(Schedule):
-    
     def __init__(self, day: int, title: str):
         self.day = day
         self.title = title
-        
+
     def __repr__(self):
         return f"BSchedule {self.title} on day: {self.day}"

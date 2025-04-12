@@ -4,12 +4,14 @@ from typing import Any
 
 # TODO: fields should take a general interface rather than just hardcoded terminal
 
+
 class Choice:
     def __init__(self, key, value, label):
-        print('this is a choice')
+        print("this is a choice")
         self.key = key
         self.value = value
         self.label = label
+
 
 class ChoiceDict:
     def __init__(self, choices):
@@ -43,6 +45,7 @@ class ChoiceDict:
     def __repr__(self):
         return f"{self.__class__.__name__}({self._index})"
 
+
 class Field(ABC):
     def __init__(self, name: str, label: str | None = None):
         self.name = name
@@ -53,10 +56,17 @@ class Field(ABC):
 
 
 class PromptField(Field):
-    def __init__(self, name: str, label: str | None = None, cast: Callable[[str], Any] = str, validator: Callable = None):
+    def __init__(
+        self,
+        name: str,
+        label: str | None = None,
+        cast: Callable[[str], Any] = str,
+        validator: Callable = None,
+    ):
         super().__init__(name, label)
         self.cast = cast
         self.validator = validator
+
     def get_input(self, context: dict[str, Any]) -> None:
         while True:
             try:
@@ -64,12 +74,13 @@ class PromptField(Field):
                 if self.validator:
                     if not self.validator(value):
                         raise Exception()
-                        
+
                 context[self.name] = value
                 break
-            
+
             except Exception:
                 print("Invalid input.")
+
 
 class NestedFormField(Field):
     def __init__(self, name: str, form: Callable, label: str | None = None):
@@ -81,35 +92,30 @@ class NestedFormField(Field):
         # NOTE: form has to the the callable that runs the form and returns some kind of object
         context[self.name] = self.form()
 
+
 class ChoiceField(Field):
-    def __init__(self, name: str, label: str, choices:ChoiceDict):
+    def __init__(self, name: str, label: str, choices: ChoiceDict):
         super().__init__(name, label)
         self.choices = choices
-    
 
     def get_input(self, context: dict[str, Any]) -> None:
         # TODO: I don't like the numbered choices
         print(f"\n=== {self.label} ===")
         for key, choice in self.choices.items():
             print(f"{key}: {choice.label}")
-        #print("0. Quit")
+        # print("0. Quit")
         choice = input(">> ")
-        #if choice == "0":
+        # if choice == "0":
         #    print('user wants to go!!')
         #    context["quit"] = True
-        #elif choice in self.choices:
+        # elif choice in self.choices:
         if choice in self.choices:
             ret = self.choices[choice].value
-            print(f'chose {choice} {context}')
-            # TODO: better way to handle main menu options
-            if not self.name == "Main Menu":
-                context[self.name] = ret
         else:
             print("Invalid choice.")
 
 
 class Form:
-
     def __init__(self):
         self.fields = []
 
