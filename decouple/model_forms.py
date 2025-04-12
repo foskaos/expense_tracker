@@ -1,13 +1,14 @@
-from form import Form, PromptField, NestedFormField, ChoiceField
+from form import Form, PromptField, NestedFormField, ChoiceField, ChoiceDict, Choice
 from models.expense import Expense
-from models.schedule import ASched, BSched
-
-SCHEDULE_FORM_REGISTRY = {}
+from models.schedule import ASched, BSched, WeeklyExpenseSchedule, AnchoredExpenseSchedule
+import calendar
+SCHEDULE_FORM_REGISTRY = ChoiceDict([]) 
 
 def register_schedule_form(key):
     """Decorator to register a schedule form in the registry using a unique key."""
     def decorator(cls):
-        SCHEDULE_FORM_REGISTRY[key] = cls
+        choice = Choice(key, cls, cls.label)
+        SCHEDULE_FORM_REGISTRY[key] = choice
         return cls
     return decorator
 
@@ -37,40 +38,44 @@ class ExpenseForm(Form):
             amount=data["amount"],
             schedule=data["schedule"]
         )
-
 @register_schedule_form("W")
 class WeeklyScheduleForm(Form):
-    @staticmethod
-    def label():
-        return "Weekly Schedule"
+    label = "Weekly Schedule"
     
     def __init__(self):
         super().__init__()
-        self.fields = [
-            PromptField("day", "Enter day of the week (e.g., Monday)"),
-            PromptField("title", "Enter Schedule Title")
+
+        choices = [
+            Choice(str(i), day, day) for i,day in enumerate(calendar.day_name)
         ]
+
+        self.fields = [
+            ChoiceField('weekday','Which Day of the Week?',ChoiceDict(choices))
+        ]
+
+    def week_day(self):
+        choice_dict = {
+            i:day for i,day in calendar.day_name()
+        }
+        choices = ChoiceField('weekday','Which Day of the Week?',choice_dict)
 
     def get_schedule(self):
         print(f'called get_schedule for {self.__class__}')
         data = self.run_form()
-        return BSched(day=data["day"],title = data['title'])
+        return WeeklyExpenseSchedule(weekday=data["weekday"])
 
 
 @register_schedule_form("M")
-class MonthlyScheduleForm(Form):
-    @staticmethod
-    def label():
-        return "Monthly Schedule"
-    
+class MonthlyAnchoredScheduleForm(Form):
+    label = "Monthly Schedule"
+
     def __init__(self):
         super().__init__()
         self.fields = [
-            PromptField("anchor", "Enter day of the month (1-31)"),
-            PromptField("title", "Enter Schedule Title")
+            PromptField("anchor", "Enter day of the month (1-28)",int,(lambda x:1 <= x <= 28) ),
         ]
 
     def get_schedule(self):
         data = self.run_form()
-        return ASched(anchor=int(data["anchor"]), title=data['title'])
+        return AnchoredExpenseSchedule(anchor=data["anchor"])
 

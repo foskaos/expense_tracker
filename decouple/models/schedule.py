@@ -1,6 +1,6 @@
 from typing import Protocol
 import datetime
-from period import Period, last_working_day, first_working_day
+from models.period import Period, last_working_day, first_working_day
 
 class Schedule(Protocol):
 

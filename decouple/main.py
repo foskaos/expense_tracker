@@ -1,6 +1,7 @@
 from model_forms import ExpenseForm
+import sys
 
-from form import ChoiceField, Form
+from form import ChoiceField, Form, Choice, ChoiceDict
 
 #if __name__ == "__main__":
 #    print("=== Expense Entry ===")
@@ -36,13 +37,19 @@ class MainMenuForm(Form):
         data = self.run_form(context)
         return data['MainMenu'](context)
 
+def quit(*args,**kwargs):
+    sys.exit(0)
+
 def main_menu(mm_context):
     # mm_context = {'expenses':[]}
-    mm_choices = {
-        '1': create_expense,
+    mm_choices = ChoiceDict([
+        Choice('1',create_expense,'Make an expense'),
+        Choice('q',quit, 'Quit')
+    ])
+    
         #'2':inspect_contents
         #'2': list_expenses
-    }
+   
     main_menu = MainMenuForm(mm_choices)
     main_menu.do_menu_action(mm_context) 
     # TODO: this is leaving the MainMenu Choice in the context... not sure if this is a problem
@@ -53,3 +60,5 @@ def main_menu(mm_context):
 app_context = {'expenses': []}
 while True:
     app_context = main_menu(app_context)
+    if app_context.get('quit',False):
+        break
