@@ -56,7 +56,9 @@ class WeeklyScheduleForm(Form):
     def __init__(self):
         super().__init__()
 
-        choices = [Choice(str(i), day, day) for i, day in enumerate(calendar.day_name)]
+        choices = [
+            Choice(str(i + 1), i, day) for i, day in enumerate(calendar.day_name)
+        ]
 
         self.fields = [
             ChoiceField("weekday", "Which Day of the Week?", ChoiceDict(choices))

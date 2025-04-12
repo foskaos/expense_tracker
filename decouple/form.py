@@ -61,25 +61,33 @@ class PromptField(Field):
         name: str,
         label: str | None = None,
         cast: Callable[[str], Any] = str,
-        validator: Callable = None,
+        validator: Callable = (lambda x: True),
     ):
         super().__init__(name, label)
         self.cast = cast
         self.validator = validator
 
+    def validate_input(self, value):
+        is_valid = self.validator(value)
+        if not is_valid:
+            raise ValueError("Could Not Validated input")
+        return value
+
+    # TODO: prompt validator handling needs to be much better than this
     def get_input(self, context: dict[str, Any]) -> None:
         while True:
             try:
                 value = self.cast(input(f"{self.label}: "))
-                if self.validator:
-                    if not self.validator(value):
-                        raise Exception()
-
-                context[self.name] = value
-                break
-
             except Exception:
                 print("Invalid input.")
+                continue
+
+            try:
+                validated_input = self.validate_input(value)
+                context[self.name] = value
+                break
+            except ValueError:
+                print("Input failed Validation Rule, Try again")
 
 
 class NestedFormField(Field):
@@ -103,14 +111,10 @@ class ChoiceField(Field):
         print(f"\n=== {self.label} ===")
         for key, choice in self.choices.items():
             print(f"{key}: {choice.label}")
-        # print("0. Quit")
         choice = input(">> ")
-        # if choice == "0":
-        #    print('user wants to go!!')
-        #    context["quit"] = True
-        # elif choice in self.choices:
         if choice in self.choices:
             ret = self.choices[choice].value
+            context[self.name] = ret
         else:
             print("Invalid choice.")
 

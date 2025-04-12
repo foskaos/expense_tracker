@@ -4,13 +4,6 @@ import sys
 from form import ChoiceField, Form, Choice, ChoiceDict
 
 
-# if __name__ == "__main__":
-#    print("=== Expense Entry ===")
-#    expense_form = ExpenseForm()
-#    expense = expense_form.get_expense()
-#    print("\nCreated expense:")
-#    print(expense)
-#
 def create_expense(context):
     print("=== Expense Entry ===")
     expense_form = ExpenseForm()
@@ -55,10 +48,6 @@ def main_menu(mm_context):
     mm_choices = ChoiceDict(
         [Choice("1", create_expense, "Make an expense"), Choice("q", quit, "Quit")]
     )
-
-    #'2':inspect_contents
-    #'2': list_expenses
-
     main_menu = MainMenuForm(mm_choices)
     main_menu.do_menu_action(mm_context)
     print(f"Main Menu context: {mm_context}")
