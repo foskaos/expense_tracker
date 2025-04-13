@@ -46,7 +46,10 @@ def quit(*args, **kwargs):
 def main_menu(mm_context):
     # mm_context = {'expenses':[]}
     mm_choices = ChoiceDict(
-        [Choice("1", create_expense, "Make an expense"), Choice("q", quit, "Quit")]
+        [
+            Choice("1", create_expense, "Make an expense"),
+            Choice("q", quit, "Quit"),
+        ]
     )
     main_menu = MainMenuForm(mm_choices)
     main_menu.do_menu_action(mm_context)

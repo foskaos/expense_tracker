@@ -1,14 +1,31 @@
-from typing import Protocol
 import datetime
-from models.period import Period, last_working_day, first_working_day
+from typing import Protocol
+
+from models.period import Period, first_working_day, last_working_day
 
 
 class Schedule(Protocol):
+    discrim = "BASE"
+
     def get_occurences_in_period(self, period: Period) -> list[datetime.date]:
         raise NotImplementedError("Not Implemented")
 
+    @classmethod
+    def from_dict(cls, input_dict):
+        # 1. find subclass with correct discrim
+        for sub in cls.__subclasses__():
+            if hasattr(sub, "discrim"):
+                if sub.discrim == input_dict.get("type", None):
+                    return sub(**input_dict["args"])
+
+    def to_dict(self):
+        output = {"type": self.discrim, "args": self.__dict__}
+        return output
+
 
 class AnchoredExpenseSchedule(Schedule):
+    discrim = "anchored"
+
     def __init__(self, anchor: int) -> None:
         self.anchor = anchor
 
@@ -25,6 +42,8 @@ class AnchoredExpenseSchedule(Schedule):
 
 
 class FirstLastWorkingDayMonthlyExpenseSchedule(Schedule):
+    discrim = "first_last_working"
+
     def __init__(self, anchor):
         super().__init__()
         if anchor == "f":
@@ -48,6 +67,8 @@ class FirstLastWorkingDayMonthlyExpenseSchedule(Schedule):
 
 
 class WeeklyExpenseSchedule(Schedule):
+    discrim = "weekly"
+
     def __init__(self, weekday):
         super().__init__(self)
         self.weekday = weekday
