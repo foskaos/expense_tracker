@@ -1,12 +1,11 @@
-from form import Form, PromptField, NestedFormField, ChoiceField, ChoiceDict, Choice
+import calendar
+
+from form import Choice, ChoiceDict, ChoiceField, Form, NestedFormField, PromptField
 from models.expense import Expense
 from models.schedule import (
-    ASched,
-    BSched,
-    WeeklyExpenseSchedule,
     AnchoredExpenseSchedule,
+    WeeklyExpenseSchedule,
 )
-import calendar
 
 SCHEDULE_FORM_REGISTRY = ChoiceDict([])
 
